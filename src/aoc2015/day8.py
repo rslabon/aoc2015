@@ -14,8 +14,7 @@ def codes(s):
 
 
 def encode_codes(s):
-    ss = s.replace("\\", "\\\\").replace("\\x", "\\x").replace("\"", "\\\"")
-    # print(s, f"\"{ss}\"")
+    ss = s.replace("\\", "\\\\").replace("\"", "\\\"")
     return len(f"\"{ss}\"")
 
 
