@@ -1,28 +1,6 @@
 import functools
 import itertools
 
-# Weapons:    Cost  Damage  Armor
-# Dagger        8     4       0
-# Shortsword   10     5       0
-# Warhammer    25     6       0
-# Longsword    40     7       0
-# Greataxe     74     8       0
-#
-# Armor:      Cost  Damage  Armor
-# Leather      13     0       1
-# Chainmail    31     0       2
-# Splintmail   53     0       3
-# Bandedmail   75     0       4
-# Platemail   102     0       5
-#
-# Rings:      Cost  Damage  Armor
-# Damage +1    25     1       0
-# Damage +2    50     2       0
-# Damage +3   100     3       0
-# Defense +1   20     0       1
-# Defense +2   40     0       2
-# Defense +3   80     0       3
-
 weapons = [(8, 4, 0), (10, 5, 0), (25, 6, 0), (40, 7, 0), (74, 8, 0)]
 armors = [(13, 0, 1), (31, 0, 2), (53, 0, 3), (75, 0, 4), (102, 0, 5)]
 rings = [(25, 1, 0), (50, 2, 0), (100, 3, 0), (20, 0, 1), (40, 0, 2), (80, 0, 3)]
@@ -36,13 +14,11 @@ def play(player, boss, player_turn):
 
     if player_turn:
         bhit_points = bhit_points + barmor - pdamage
-        # print("boss", bhit_points)
         if bhit_points <= 0:
             return True
         return play((phit_points, pdamage, parmor), (bhit_points, bdamage, barmor), False)
     else:
         phit_points = phit_points + parmor - bdamage
-        # print("player", phit_points)
         if phit_points <= 0:
             return False
         return play((phit_points, pdamage, parmor), (bhit_points, bdamage, barmor), True)
