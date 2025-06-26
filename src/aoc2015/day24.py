@@ -1,4 +1,5 @@
-import functools
+import heapq
+from collections import deque
 from functools import reduce
 
 weights = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11]
@@ -39,46 +40,61 @@ weights = [
 def qe(products):
     return reduce(lambda x, y: x * y, products)
 
-c = 0
 
-@functools.cache
-def find_combination_of_weights(weights, expected, used):
-    weights = set(weights)
-    if expected == 0:
-        global c
-        c+=1
-        print(c, used)
-        return frozenset(frozenset({tuple(used)}))
-    if expected < 0:
-        return None
+def find_smallest_qe(weights, value):
+    q = []
+    heapq.heapify(q)
+    heapq.heappush(q, (0, set(), value))
+    seen = set()
+    result = []
 
-    result = set()
-    if sum(weights) < expected:
-        return None
+    while q:
+        _, current_weights, current_value = heapq.heappop(q)
+        if tuple(current_weights) in seen:
+            continue
+        seen.add(tuple(current_weights))
+        if current_value == 0:
+            return qe(current_weights)
 
-    for weight in weights:
-        items = find_combination_of_weights(frozenset(weights - {weight}), expected - weight, frozenset(used | {weight}))
-        if items:
-            result |= items
-    return frozenset(result)
+        for i, weight in enumerate(weights):
+            if weight not in current_weights and current_value - weight >= 0:
+                heapq.heappush(q, (current_value - weight, current_weights | {weight}, current_value - weight))
+
+    return result
 
 
-total_weight = sum(weights)
-single_group = total_weight // 3
+def find_smallest_qe2(weights, value):
+    q = deque()
+    q.append((set(), value))
+    seen = set()
+    result = []
 
-g1_combinations = find_combination_of_weights(frozenset(weights), single_group, frozenset())
-groups = []
-print(len(g1_combinations))
+    while q:
+        current_weights, current_value = q.popleft()
+        if tuple(current_weights) in seen:
+            continue
+        seen.add(tuple(current_weights))
+        if current_value == 0:
+            return qe(current_weights)
 
-# for g1_combination in g1_combinations:
-#     g2_weights = set(weights) - set(g1_combination)
-#     g2_combinations = find_combination_of_weights(frozenset(g2_weights), single_group, frozenset())
-#     for g2_combination in g2_combinations:
-#         g3_combination = tuple(set(g2_weights) - set(g2_combination))
-#         qe_value = qe(g1_combination)
-#         groups.append((qe_value, g1_combination, g2_combination, g3_combination))
-#         print(len(groups))
-#
-# groups = sorted(groups, key=lambda g: g[0])
-# groups = sorted(groups, key=lambda g: len(g[1]))
-# print(groups[0][0])
+        for i, weight in enumerate(weights):
+            if weight not in current_weights and current_value - weight >= 0:
+                q.append((current_weights | {weight}, current_value - weight))
+
+    return result
+
+
+def part1():
+    total_weight = sum(weights)
+    single_group = total_weight // 3
+    print(find_smallest_qe(weights, single_group))
+
+
+def part2():
+    total_weight = sum(weights)
+    single_group = total_weight // 4
+    print(find_smallest_qe2(weights, single_group))
+
+
+part1()
+part2()
